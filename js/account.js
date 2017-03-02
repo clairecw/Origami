@@ -65,11 +65,14 @@ function initApp() {
         var profpic = snapshot.val().profPic;
         if (profpic != null) document.getElementById("avatar").src = profpic;
 
+
         recruiter = snapshot.val().recruiter;
         if (recruiter) {
           var followinglist = snapshot.val().following;
           for (count = 0; count < followinglist.length; count++) {
+
             const u = followinglist[count];
+            
             if (count == 0) {
               database.ref('/users/' + u).once('value').then(function(snapshot1) {
                 var fn = snapshot1.val().firstName;
@@ -89,13 +92,13 @@ function initApp() {
 
                     if (postlist.length > 1) {
                       var div = document.getElementById('post');
-                      clone = div.cloneNode(false);
+                      var clone = div.cloneNode(false);
 
                       var adiv = document.getElementById('squmb');
-                      aclone = adiv.cloneNode(false);
+                      var aclone = adiv.cloneNode(false);
 
                       imgdiv = document.getElementById('pic');
-                      imgclone = imgdiv.cloneNode(true);
+                      var imgclone = imgdiv.cloneNode(true);
                       imgclone.src = url;
                       aclone.appendChild(imgclone);
                       clone.appendChild(aclone);
@@ -108,16 +111,19 @@ function initApp() {
             }
             else {
               var gallery = document.getElementById('gallery');
-              galleryclone = gallery.cloneNode(false);
+              var galleryclone = gallery.cloneNode(false);
 
               var div = document.getElementById('followingname');
-              nameclone = div.cloneNode(true);
+              var nameclone = div.cloneNode(true);
+              nameclone.id = "name" + u;
               database.ref('/users/' + u).once('value').then(function(snapshot1) {
                 var fn = snapshot1.val().firstName;
                 var ln = snapshot1.val().lastName;
-                nameclone.innerHTML = "<hr>" + fn + " " + ln;
-                galleryclone.appendChild(nameclone);
+                document.getElementById("name" + u).innerHTML = "<hr>" + fn + " " + ln;
               });
+              galleryclone.appendChild(nameclone);
+              galleryclone.id = u;
+              document.body.appendChild(galleryclone);  
 
               database.ref('/users/' + u + '/files').once('value').then(function(snapshot2) {
                 snapshot2.forEach(function(childSnapshot) {
@@ -125,24 +131,25 @@ function initApp() {
                   database.ref('/users/' + u + '/files/' + childKey).once('value').then(function(snapshott) {
                     var url = snapshott.val().url;
                     postlist.push(url);
-                      var div = document.getElementById('post');
-                      clone = div.cloneNode(false);
+                    var div = document.getElementById('post');
+                    var clone = div.cloneNode(false);
 
-                      var adiv = document.getElementById('squmb');
-                      aclone = adiv.cloneNode(false);
+                    var adiv = document.getElementById('squmb');
+                    var aclone = adiv.cloneNode(false);
 
-                      imgdiv = document.getElementById('pic');
-                      imgclone = imgdiv.cloneNode(true);
-                      imgclone.src = url;
-                      aclone.appendChild(imgclone);
-                      clone.appendChild(aclone);
-                      galleryclone.appendChild(clone);
-                      document.getElementById('page-top').appendChild(galleryclone);
+                    imgdiv = document.getElementById('pic');
+                    var imgclone = imgdiv.cloneNode(true);
+                    imgclone.src = url;
+                    aclone.appendChild(imgclone);
+                    clone.appendChild(aclone);
+                    document.getElementById(u).appendChild(clone);
                   });
                 });
               });
             }
           }
+          var button = document.getElementById("button");
+          button.innerHTML = "<a href=\"search.html\" class=\"btn btn-primary btn-xl\">+ Add students</a>";
           return;
         }
       });
@@ -183,6 +190,7 @@ function initApp() {
   });
 
   document.getElementById('sign-out').addEventListener('click', toggleSignOut, false);
+  document.body.addEventListener('click', print, false);
 }
 
 window.onload = function() {
