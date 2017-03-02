@@ -76,45 +76,72 @@ function initApp() {
                 var ln = snapshot1.val().lastName;
                 document.getElementById("followingname").innerHTML = fn + " " + ln;
               });
+
+              database.ref('/users/' + u + '/files').once('value').then(function(snapshot2) {
+                snapshot2.forEach(function(childSnapshot) {
+                  var childKey = childSnapshot.key;
+                  database.ref('/users/' + u + '/files/' + childKey).once('value').then(function(snapshott) {
+                    var url = snapshott.val().url;
+                    postlist.push(url);
+
+                    var imgdiv = document.getElementById('pic');
+                    imgdiv.src = postlist[0];
+
+                    if (postlist.length > 1) {
+                      var div = document.getElementById('post');
+                      clone = div.cloneNode(false);
+
+                      var adiv = document.getElementById('squmb');
+                      aclone = adiv.cloneNode(false);
+
+                      imgdiv = document.getElementById('pic');
+                      imgclone = imgdiv.cloneNode(true);
+                      imgclone.src = url;
+                      aclone.appendChild(imgclone);
+                      clone.appendChild(aclone);
+                      var target = document.getElementById("gallery");
+                      target.appendChild(clone);
+                    }
+                  });
+                });
+              });
             }
             else {
+              var gallery = document.getElementById('gallery');
+              galleryclone = gallery.cloneNode(false);
+
               var div = document.getElementById('followingname');
               nameclone = div.cloneNode(true);
               database.ref('/users/' + u).once('value').then(function(snapshot1) {
                 var fn = snapshot1.val().firstName;
                 var ln = snapshot1.val().lastName;
-                nameclone.innerHTML = "<br><br><br><br><br><br><br><br><br><br><br><br><br><br>" + fn + " " + ln;
-                var target = document.getElementById("gallery");
-                target.appendChild(nameclone);
+                nameclone.innerHTML = "<hr>" + fn + " " + ln;
+                galleryclone.appendChild(nameclone);
               });
-            }
-            database.ref('/users/' + u + '/files').once('value').then(function(snapshot2) {
-              snapshot2.forEach(function(childSnapshot) {
-                var childKey = childSnapshot.key;
-                database.ref('/users/' + u + '/files/' + childKey).once('value').then(function(snapshott) {
-                  var url = snapshott.val().url;
-                  postlist.push(url);
-                  var imgdiv = document.getElementById('pic');
-                  imgdiv.src = postlist[0];
 
-                  if (postlist.length > 1) {
-                    var div = document.getElementById('post');
-                    clone = div.cloneNode(false);
+              database.ref('/users/' + u + '/files').once('value').then(function(snapshot2) {
+                snapshot2.forEach(function(childSnapshot) {
+                  var childKey = childSnapshot.key;
+                  database.ref('/users/' + u + '/files/' + childKey).once('value').then(function(snapshott) {
+                    var url = snapshott.val().url;
+                    postlist.push(url);
+                      var div = document.getElementById('post');
+                      clone = div.cloneNode(false);
 
-                    var adiv = document.getElementById('squmb');
-                    aclone = adiv.cloneNode(false);
+                      var adiv = document.getElementById('squmb');
+                      aclone = adiv.cloneNode(false);
 
-                    imgdiv = document.getElementById('pic');
-                    imgclone = imgdiv.cloneNode(true);
-                    imgclone.src = url;
-                    aclone.appendChild(imgclone);
-                    clone.appendChild(aclone);
-                    var target = document.getElementById("gallery");
-                    target.appendChild(clone);
-                  }
+                      imgdiv = document.getElementById('pic');
+                      imgclone = imgdiv.cloneNode(true);
+                      imgclone.src = url;
+                      aclone.appendChild(imgclone);
+                      clone.appendChild(aclone);
+                      galleryclone.appendChild(clone);
+                      document.getElementById('page-top').appendChild(galleryclone);
+                  });
                 });
               });
-            });
+            }
           }
           return;
         }
